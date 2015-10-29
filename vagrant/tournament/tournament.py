@@ -68,7 +68,13 @@ def playerStandings():
         wins: the number of matches the player has won
         matches: the number of matches the player has played
     """
+    conn = connect()
+    cur = conn.cursor()
+    cur.execute("select * from standings ORDER BY wins DESC, matches ASC;")
+    results = cur.fetchall()
+    conn.close()
 
+    return results
 
 def reportMatch(winner, loser):
     """Records the outcome of a single match between two players.
@@ -77,7 +83,11 @@ def reportMatch(winner, loser):
       winner:  the id number of the player who won
       loser:  the id number of the player who lost
     """
- 
+    conn = connect()
+    cur = conn.cursor()
+    cur.execute("INSERT INTO match (winner,loser) values (%s,%s);",(winner,loser))
+    conn.commit()
+    conn.close()
  
 def swissPairings():
     """Returns a list of pairs of players for the next round of a match.
@@ -94,5 +104,11 @@ def swissPairings():
         id2: the second player's unique id
         name2: the second player's name
     """
+    conn = connect()
+    cur = conn.cursor()
+    cur.execute("select player_id,player_name,wins from standings where wins = 1;")
+    results = cur.fetchall()
+    conn.close()
 
+    return results
 
